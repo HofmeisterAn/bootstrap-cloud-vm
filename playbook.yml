@@ -1,15 +1,18 @@
----
 - name: null
   hosts: all
+  vars:
+    vscode_pkg_url: https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/code_1.78.2-1683731061_arm64.deb
+    realvnc_pkg_url: https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.1.0-Linux-ARM64.deb
   tasks:
     - name: Lookup environment variables
       ansible.builtin.set_fact:
-        username: "{{ lookup('env', 'USERNAME') }}"
-        password: "{{ lookup('env', 'PASSWORD') }}"
-        public_ip_address: "{{ lookup('env', 'PUBLIC_IP_ADDRESS') }}"
+        username: '{{ lookup(''env'', ''USERNAME'') }}'
+        password: '{{ lookup(''env'', ''PASSWORD'') }}'
+        public_ip_address: '{{ lookup(''env'', ''PUBLIC_IP_ADDRESS'') }}'
     - name: Install Microsoft's GPG public key
       become: true
       ansible.builtin.apt_key:
+        id: BC528686B50D79E339D3721CEB3E94ADBE1229CF
         url: https://packages.microsoft.com/keys/microsoft.asc
     - name: Upgrade packages
       become: true
@@ -30,13 +33,59 @@
     - name: Install Visual Studio Code
       become: true
       ansible.builtin.apt:
-        deb: https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/code_1.78.2-1683731061_arm64.deb
+        deb: '{{ vscode_pkg_url }}'
     - name: Install RealVNC
       become: true
       ansible.builtin.apt:
-        deb: https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.1.0-Linux-ARM64.deb
-    - name:
+        deb: '{{ realvnc_pkg_url }}'
+    - name: Copy vncserver-x11 file
       become: true
       ansible.builtin.template:
         src: vncserver-x11
         dest: /root/.vnc/config.d/vncserver-x11
+    - name: Copy Xwrapper.config file
+      become: true
+      ansible.builtin.template:
+        src: Xwrapper.config
+        dest: /etc/X11/Xwrapper.config
+    - name: Create user's .Xauthority
+      become: true
+      ansible.builtin.copy:
+        content: ''
+        dest: /home/{{ username }}/.Xauthority
+        owner: '{{ username }}'
+        group: '{{ username }}'
+        mode: '0644'
+    - name: Create user's .xinitrc
+      become: true
+      ansible.builtin.copy:
+        src: /etc/X11/xinit/xinitrc
+        dest: /home/{{ username }}/.xinitrc
+        owner: '{{ username }}'
+        group: '{{ username }}'
+        mode: '0644'
+    - name: Add user's window manager
+      become: true
+      ansible.builtin.lineinfile:
+        path: /home/{{ username }}/.xinitrc
+        line: exec i3
+    - name: Set user's password
+      become: true
+      ansible.builtin.shell: |
+        echo '{{ username }}:{{ password }}' | chpasswd
+    - name: Link shared object libraries
+      become: true
+      ansible.builtin.shell: |
+        ln --symbolic /usr/lib/aarch64-linux-gnu/libbcm_host.so /usr/lib/libbcm_host.so.0
+        ln --symbolic /usr/lib/aarch64-linux-gnu/libvchiq_arm.so /usr/lib/libvchiq_arm.so.0
+        ln --symbolic /usr/lib/aarch64-linux-gnu/libvcos.so /usr/lib/libvcos.so.0
+    - name: Start vncserver service
+      become: true
+      ansible.builtin.systemd:
+        state: started
+        name: vncserver-virtuald.service
+    - name: Start vncserver-x11 service
+      become: true
+      ansible.builtin.systemd:
+        state: started
+        name: vncserver-x11-serviced.service
