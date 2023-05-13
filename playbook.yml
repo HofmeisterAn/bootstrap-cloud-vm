@@ -1,0 +1,42 @@
+---
+- name: null
+  hosts: all
+  tasks:
+    - name: Lookup environment variables
+      ansible.builtin.set_fact:
+        username: "{{ lookup('env', 'USERNAME') }}"
+        password: "{{ lookup('env', 'PASSWORD') }}"
+        public_ip_address: "{{ lookup('env', 'PUBLIC_IP_ADDRESS') }}"
+    - name: Install Microsoft's GPG public key
+      become: true
+      ansible.builtin.apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+    - name: Upgrade packages
+      become: true
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: yes
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - i3
+          - xinit
+    - name: Remove packages
+      become: true
+      ansible.builtin.apt:
+        autoremove: yes
+        clean: yes
+    - name: Install Visual Studio Code
+      become: true
+      ansible.builtin.apt:
+        deb: https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/code_1.78.2-1683731061_arm64.deb
+    - name: Install RealVNC
+      become: true
+      ansible.builtin.apt:
+        deb: https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.1.0-Linux-ARM64.deb
+    - name:
+      become: true
+      ansible.builtin.template:
+        src: vncserver-x11
+        dest: /root/.vnc/config.d/vncserver-x11

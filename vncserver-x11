@@ -1,0 +1,8 @@
+AllowCloudRelay=0
+AllowCloudRfb=0
+EnableAnalytics=0
+EnableAutoUpdateChecks=0
+ServiceDiscoveryEnabled=0
+ShowCloudHints=0
+IpClientAddresses=+{{ public_ip_address }}
+Permissions={{ username }}:f
