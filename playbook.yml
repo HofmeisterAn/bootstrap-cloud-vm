@@ -3,6 +3,11 @@
   vars:
     vscode_pkg_url: https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/code_1.78.2-1683731061_arm64.deb
     realvnc_pkg_url: https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.1.0-Linux-ARM64.deb
+    etc_x11_xwrapper_config: /etc/X11/Xwrapper.config
+    home_username__config_i3_config: '/home/{{ username }}/.config/i3/config'
+    home_username__xauthority: '/home/{{ username }}/.Xauthority'
+    home_username__xinitrc: '/home/{{ username }}/.xinitrc'
+    root__vnc_config_d_vncserver_x11: /root/.vnc/config.d/vncserver-x11
   tasks:
     - name: Lookup environment variables
       ansible.builtin.set_fact:
@@ -43,46 +48,53 @@
       become: true
       ansible.builtin.apt:
         deb: '{{ realvnc_pkg_url }}'
-    - name: Copy vncserver-x11 file
+    - name: Copy '{{ root__vnc_config_d_vncserver_x11 }}'
       become: true
       ansible.builtin.template:
         src: vncserver-x11
-        dest: /root/.vnc/config.d/vncserver-x11
-    - name: Copy Xwrapper.config file
+        dest: '{{ root__vnc_config_d_vncserver_x11 }}'
+    - name: Copy '{{ etc_x11_xwrapper_config }}'
       become: true
       ansible.builtin.template:
         src: Xwrapper.config
-        dest: /etc/X11/Xwrapper.config
-    - name: Create user's i3 config
+        dest: '{{ etc_x11_xwrapper_config }}'
+    - name: Create '{{ home_username__config_i3_config | dirname }}'
+      ansible.builtin.file:
+        path: '{{ home_username__config_i3_config | dirname }}'
+        state: directory
+        owner: '{{ username }}'
+        group: '{{ username }}'
+        mode: '0755'
+    - name: Copy '{{ home_username__config_i3_config }}'
       become: true
       ansible.builtin.template:
         src: config
-        dest: /home/{{ username }}/.config/i3/config
+        dest: '{{ home_username__config_i3_config }}'
         owner: '{{ username }}'
         group: '{{ username }}'
         mode: '0644'
-    - name: Create user's .Xauthority
+    - name: Create '{{ home_username__xauthority }}'
       become: true
       ansible.builtin.copy:
         content: ''
-        dest: /home/{{ username }}/.Xauthority
+        dest: '{{ home_username__xauthority }}'
         owner: '{{ username }}'
         group: '{{ username }}'
         mode: '0644'
-    - name: Create user's .xinitrc
+    - name: Create '{{ home_username__xinitrc }}'
       become: true
       ansible.builtin.copy:
         src: /etc/X11/xinit/xinitrc
-        dest: /home/{{ username }}/.xinitrc
+        dest: '{{ home_username__xinitrc }}'
         owner: '{{ username }}'
         group: '{{ username }}'
         mode: '0644'
-    - name: Add user's window manager
+    - name: Create '{{ home_username__xinitrc }}'
       become: true
       ansible.builtin.lineinfile:
-        path: /home/{{ username }}/.xinitrc
+        path: '{{ home_username__xinitrc }}'
         line: exec i3
-    - name: Set user's password
+    - name: Change password
       become: true
       ansible.builtin.shell: |
         echo '{{ username }}:{{ password }}' | chpasswd
