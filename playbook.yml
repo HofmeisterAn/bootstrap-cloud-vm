@@ -23,6 +23,7 @@
       become: true
       ansible.builtin.apt:
         pkg:
+          - firefox
           - i3
           - terminator
           - xinit
