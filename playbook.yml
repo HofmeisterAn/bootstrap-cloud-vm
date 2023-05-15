@@ -4,9 +4,11 @@
     vscode_pkg_url: https://az764295.vo.msecnd.net/stable/b3e4e68a0bc097f0ae7907b217c1119af9e03435/code_1.78.2-1683731061_arm64.deb
     realvnc_pkg_url: https://downloads.realvnc.com/download/file/vnc.files/VNC-Server-7.1.0-Linux-ARM64.deb
     etc_x11_xwrapper_config: /etc/X11/Xwrapper.config
+    etc_xdg_terminator_config: /etc/xdg/terminator/config
     home_username__config_i3_config: '/home/{{ username }}/.config/i3/config'
     home_username__xauthority: '/home/{{ username }}/.Xauthority'
     home_username__xinitrc: '/home/{{ username }}/.xinitrc'
+    # https://help.realvnc.com/hc/en-us/articles/360002251297-VNC-Server-Parameter-Reference.
     root__vnc_config_d_vncserver_x11: /root/.vnc/config.d/vncserver-x11
   tasks:
     - name: Lookup environment variables
@@ -58,6 +60,15 @@
       ansible.builtin.template:
         src: Xwrapper.config
         dest: '{{ etc_x11_xwrapper_config }}'
+    - name: Create '{{ etc_xdg_terminator_config | dirname }}'
+      ansible.builtin.file:
+        path: '{{ etc_xdg_terminator_config | dirname }}'
+        state: directory
+    - name: Create '{{ etc_xdg_terminator_config }}'
+      become: true
+      ansible.builtin.copy:
+        content: ''
+        dest: '{{ etc_xdg_terminator_config }}'
     - name: Create '{{ home_username__config_i3_config | dirname }}'
       ansible.builtin.file:
         path: '{{ home_username__config_i3_config | dirname }}'
