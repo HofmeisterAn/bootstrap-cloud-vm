@@ -30,6 +30,7 @@
       become: true
       ansible.builtin.apt:
         pkg:
+          - cargo
           - firefox
           - i3
           - terminator
@@ -50,6 +51,8 @@
       become: true
       ansible.builtin.apt:
         deb: '{{ realvnc_pkg_url }}'
+    - ansible.builtin.include_role:
+        name: i3status-rs
     - name: Copy '{{ root__vnc_config_d_vncserver_x11 }}'
       become: true
       ansible.builtin.template:

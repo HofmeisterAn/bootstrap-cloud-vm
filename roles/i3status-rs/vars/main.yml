@@ -1,0 +1,1 @@
+sources_root: '/home/{{ username }}/sources/rust/i3status-rust'

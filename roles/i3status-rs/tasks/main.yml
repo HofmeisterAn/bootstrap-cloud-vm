@@ -1,0 +1,7 @@
+- name: Clone i3status-rust
+  ansible.builtin.git:
+    repo: https://github.com/greshake/i3status-rust.git
+    dest: '{{ sources_root }}'
+    version: v0.31.4
+  become: true
+  become_user: '{{ username }}'
