@@ -1,4 +1,4 @@
 - name: Install Rust
-  ansible.builtin.shell: curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs | sh -s -- -y
   become: true
   become_user: '{{ username }}'
+  ansible.builtin.shell: curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs | sh -s -- -y

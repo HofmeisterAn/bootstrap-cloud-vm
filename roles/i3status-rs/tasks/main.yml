@@ -1,7 +1,26 @@
 - name: Clone i3status-rust
+  become: true
+  become_user: '{{ username }}'
   ansible.builtin.git:
     repo: https://github.com/greshake/i3status-rust.git
     dest: '{{ sources_root }}'
     version: v0.31.4
+- name: Build i3status-rust
   become: true
   become_user: '{{ username }}'
+  ansible.builtin.shell:
+    cmd: ~/.cargo/bin/cargo build --release
+    chdir: '{{ sources_root }}'
+- name: Create OpenType directory
+  ansible.builtin.file:
+    path: /usr/share/fonts/opentype
+    state: directory
+- name: Install Font Awesome Free
+  ansible.builtin.unarchive:
+    src: https://use.fontawesome.com/releases/v6.4.0/fontawesome-free-6.4.0-desktop.zip
+    dest: /usr/share/fonts/opentype
+    remote_src: true
+    include:
+      - '**/*.otf'
+    extra_opts:
+      - -j
