@@ -6,6 +6,7 @@
     etc_x11_xwrapper_config: /etc/X11/Xwrapper.config
     etc_xdg_terminator_config: /etc/xdg/terminator/config
     home_username__config_i3_config: '/home/{{ username }}/.config/i3/config'
+    home_username__config_terminator_config: '/home/{{ username }}/.config/terminator/config'
     home_username__xauthority: '/home/{{ username }}/.Xauthority'
     home_username__xinitrc: '/home/{{ username }}/.xinitrc'
     # https://help.realvnc.com/hc/en-us/articles/360002251297-VNC-Server-Parameter-Reference.
@@ -85,8 +86,23 @@
     - name: Copy '{{ home_username__config_i3_config }}'
       become: true
       ansible.builtin.template:
-        src: config
+        src: .config/i3/config
         dest: '{{ home_username__config_i3_config }}'
+        owner: '{{ username }}'
+        group: '{{ username }}'
+        mode: '0644'
+    - name: Create '{{ home_username__config_terminator_config | dirname }}'
+      ansible.builtin.file:
+        path: '{{ home_username__config_terminator_config | dirname }}'
+        state: directory
+        owner: '{{ username }}'
+        group: '{{ username }}'
+        mode: '0755'
+    - name: Copy '{{ home_username__config_terminator_config }}'
+      become: true
+      ansible.builtin.template:
+        src: .config/terminator/config
+        dest: '{{ home_username__config_terminator_config }}'
         owner: '{{ username }}'
         group: '{{ username }}'
         mode: '0644'
