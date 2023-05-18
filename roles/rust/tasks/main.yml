@@ -1,0 +1,11 @@
+- name: Install Rust
+  ansible.builtin.shell: curl --proto '=https' --tlsv1.2 --fail --silent --show-error https://sh.rustup.rs | sh
+  become: true
+  become_user: '{{ username }}'
+- name: Update PATH variable
+  become: true
+  ansible.builtin.lineinfile:
+    path: ~/.profile
+    line: PATH=$PATH:$HOME/.cargo/bin
+  become: true
+  become_user: '{{ username }}'
