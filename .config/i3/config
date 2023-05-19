@@ -40,6 +40,10 @@ exec --no-startup-id dex --autostart --environment i3
 # exec --no-startup-id nm-applet
 
 exec --no-startup-id xrandr --output Virtual-1 --mode 1920x1080 --rate 60
+# exec --no-startup-id i3-msg 'workspace 1; exec terminator --execute vifm'
+# exec --no-startup-id i3-msg 'workspace 1; exec terminator'
+# exec --no-startup-id i3-msg 'workspace 1; exec firefox'
+# exec --no-startup-id i3-msg 'workspace 2; exec code'
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status

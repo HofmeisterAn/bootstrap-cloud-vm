@@ -1,3 +1,4 @@
 [profiles]
     [[default]]
+        cursor_shape = underline
         show_titlebar = False
