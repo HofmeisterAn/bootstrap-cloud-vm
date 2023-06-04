@@ -1,3 +1,23 @@
+[theme]
+theme = "/home/remote/sources/rust/i3status-rust/files/themes/plain.toml"
+
+[theme.overrides]
+separator = " \uf053 "
+separator_bg = "#000000"
+separator_fg = "#93a1a1"
+
+[[block]]
+block = "external_ip"
+format = "\uf0ac $ip"
+
+[[block]]
+block = "disk_space"
+format = "\uf0a0 $available.eng(w:3,u:B,p:M)"
+
+[[block]]
+block = "memory"
+format = "\uf538 $mem_avail.eng(w:3,u:B,p:M)"
+
 [[block]]
 block = "cpu"
 format = "\uf2db $utilization"
