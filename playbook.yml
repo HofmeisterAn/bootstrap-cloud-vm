@@ -39,6 +39,7 @@
           - libsensors-dev
           - libssl-dev
           - pkg-config
+          - squid
           - terminator
           - unzip
           - vifm
